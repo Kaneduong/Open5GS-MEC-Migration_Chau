@@ -1,0 +1,45 @@
+clear
+clc
+
+restoredefaultpath
+
+projectRoot = fileparts(mfilename('fullpath'));
+
+addpath(fullfile(projectRoot,'config'));
+addpath(fullfile(projectRoot,'environment'));
+addpath(fullfile(projectRoot,'metrics'));
+addpath(fullfile(projectRoot,'policy'));
+addpath(fullfile(projectRoot,'results'));
+
+param = initParameters();
+
+state = resetEnvironment(param);
+
+log = initializeLog(param);
+
+disp('===== ALWAYS MIGRATE POLICY =====')
+
+for k = 1:param.simTime
+
+    action = alwaysPolicy(state,param);
+
+    state = stepEnvironment(state,param,action);
+
+    log = updateLog(log,state);
+
+    fprintf(['T=%3d Pos=%4.0f MEC=%d RSSI=%7.2f Delay=%6.2f ' ...
+             'CPU1=%5.1f CPU2=%5.1f MEM1=%5.1f MEM2=%5.1f Mig=%4.2f\n'], ...
+             state.time,...
+             state.position,...
+             state.connectedMEC,...
+             state.rssi,...
+             state.delay,...
+             state.cpuMEC1,...
+             state.cpuMEC2,...
+             state.memoryMEC1,...
+             state.memoryMEC2,...
+             state.migrationCost);
+
+end
+
+disp('Simulation Finished')

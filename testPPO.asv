@@ -1,0 +1,13 @@
+
+load trainedPPO
+
+env = MECEnvironment;
+
+simOptions = rlSimulationOptions( ...
+    MaxSteps = 100);
+
+experience = sim(env,agent,simOptions);
+disp(experience)
+logPPO = env.Log;
+
+save logPPO logPPO
